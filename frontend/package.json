@@ -17,12 +17,17 @@
     "wagmi": "^3.4.2"
   },
   "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "^20.19.32",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
+    "dotenv": "^17.2.4",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "ethers": "^5.7.2",
+    "hardhat-deploy": "^1.0.4",
+    "hardhat-gas-reporter": "^2.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -1,16 +1,41 @@
-# Team Guide
-## 1. Repository Structure
-- `contracts/` Solidity smart contracts (Hardhat)
-- `test/` Hardhat tests (only our tests; template tests are archived)
-- `frontend/` Frontend (TBD)
-- `docs/` Documentation (design, API, demo notes)
-- `scripts/` Utility scripts
+## Run (Local)
 
-## 2. Quick Start (Local)
+### 1) Contracts
+
 ```bash
 npm install
 npx hardhat compile
 npx hardhat test
+```
+
+### 2) Local chain
+
+```bash
+npx hardhat node --no-deploy
+```
+
+### 3) Deploy Treasury
+
+```bash
+npx hardhat deploy --tags Treasury --network localhost
+```
+
+Copy the printed Treasury address.
+
+### 4) Frontend
+
+Create `frontend/.env.local`:
+
+```env
+NEXT_PUBLIC_TREASURY_ADDRESS=<TREASURY_ADDRESS>
+```
+
+Run:
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
 ## Dependencies

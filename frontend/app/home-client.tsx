@@ -73,9 +73,9 @@ export default function HomeClient() {
       </section>
 
       <section className="flex gap-3">
-        <Link href="/Game1">
+        <Link href="/raffle">
           <button className="px-4 py-2 rounded-md border">
-            Go to Game1
+            Go to Raffle
           </button>
         </Link>
         <Link href="/Game2">

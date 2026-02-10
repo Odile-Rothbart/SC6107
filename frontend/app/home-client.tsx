@@ -5,7 +5,8 @@ import { useAccount, useConnect, useDisconnect, useBalance } from "wagmi";
 import { injected } from "wagmi/connectors";
 import { formatUnits, isAddress, type Address } from "viem";
 
-const TREASURY_ADDRESS_RAW = process.env.NEXT_PUBLIC_TREASURY_ADDRESS ?? "";
+const TREASURY_ADDRESS_RAW = (process.env.NEXT_PUBLIC_TREASURY_ADDRESS ??
+  "0x0000000000000000000000000000000000000000") as `0x${string}`;
 const TREASURY_ADDRESS: Address | undefined = isAddress(TREASURY_ADDRESS_RAW)
   ? (TREASURY_ADDRESS_RAW as Address)
   : undefined;

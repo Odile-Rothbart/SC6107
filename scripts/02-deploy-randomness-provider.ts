@@ -7,7 +7,7 @@ const deployRandomnessProvider: DeployFunction = async function (hre: HardhatRun
     const { getNamedAccounts, deployments, network, ethers } = hre;
     const { deploy, log } = deployments;
     const { deployer } = await getNamedAccounts();
-    const chainId = network.config.chainId;
+    const chainId = network.config.chainId ?? 31337;
     let vrfCoordinatorV2Address, subscriptionId;
 
     if (developmentChains.includes(network.name)) {
@@ -22,7 +22,20 @@ const deployRandomnessProvider: DeployFunction = async function (hre: HardhatRun
         subscriptionId = networkConfig[chainId!]["subscriptionId"];
     }
 
-    const args = [subscriptionId, vrfCoordinatorV2Address, networkConfig[chainId!]["gasLane"], networkConfig[chainId!]["callbackGasLimit"]];
+    const cfg =
+    networkConfig[chainId] ??
+    networkConfig[31337] ?? {
+        gasLane:
+        "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15",
+        callbackGasLimit: "500000",
+    };
+
+    const args = [
+    subscriptionId,
+    vrfCoordinatorV2Address,
+    cfg.gasLane,
+    cfg.callbackGasLimit,
+    ];
 
     log("正在部署 RandomnessProvider...");
     const randomnessProvider = await deploy("RandomnessProvider", {

@@ -5,7 +5,8 @@ import { useAccount, useReadContract, useWriteContract, useWatchContractEvent } 
 import { parseEther } from 'viem';
 
 // ⚠️ 替换为你部署的 RandomnessProvider 地址 (从 npx hardhat deploy 的日志里找)
-const RANDOMNESS_PROVIDER_ADDRESS = "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"; 
+const RANDOMNESS_PROVIDER_ADDRESS = (process.env.NEXT_PUBLIC_RANDOMNESS_PROVIDER_ADDRESS ??
+  "0x0000000000000000000000000000000000000000") as `0x${string}`; 
 
 // 简化的 ABI，只包含我们需要的功能
 const ABI = [

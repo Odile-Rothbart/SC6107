@@ -17,7 +17,7 @@ npx hardhat node --no-deploy
 ### 3) Deploy Treasury
 
 ```bash
-npx hardhat deploy --tags Treasury --network localhost
+npx hardhat deploy --network localhost
 ```
 
 Copy the printed Treasury address.
@@ -28,6 +28,9 @@ Create `frontend/.env.local`:
 
 ```env
 NEXT_PUBLIC_TREASURY_ADDRESS=<TREASURY_ADDRESS>
+NEXT_PUBLIC_CHAIN_ID=31337
+NEXT_PUBLIC_DICE_ADDRESS=<DICEGAME_ADDRESS>
+NEXT_PUBLIC_RANDOMNESS_PROVIDER_ADDRESS=<RANDOMNESS_PROVIDER_ADDRESS>
 NEXT_PUBLIC_HARDHAT_RPC_URL=http://127.0.0.1:8545
 ```
 

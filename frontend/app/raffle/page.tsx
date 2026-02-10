@@ -7,8 +7,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 // Raffle contract address (localhost deployment - updated 2026-02-07)
-const RAFFLE_ADDRESS = "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82" as const;
-
+const RAFFLE_ADDRESS = (process.env.NEXT_PUBLIC_RAFFLE_ADDRESS ??
+  "0x0000000000000000000000000000000000000000") as `0x${string}`;
 // Raffle contract ABI (only the functions we need)
 const RAFFLE_ABI = [
   {

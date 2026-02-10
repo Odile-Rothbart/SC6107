@@ -28,6 +28,7 @@ Create `frontend/.env.local`:
 
 ```env
 NEXT_PUBLIC_TREASURY_ADDRESS=<TREASURY_ADDRESS>
+NEXT_PUBLIC_HARDHAT_RPC_URL=http://127.0.0.1:8545
 ```
 
 Run:

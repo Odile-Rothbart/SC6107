@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers, network, deployments } from "hardhat";
 import { BigNumber } from "ethers";
-import "@nomicfoundation/hardhat-chai-matchers";
+// import "@nomicfoundation/hardhat-chai-matchers";
 
 // Inline to avoid module resolution issues
 const developmentChains = ["hardhat", "localhost"];

@@ -48,7 +48,7 @@ graph TD
     end
     
     subgraph "Protocol Smart Contracts"
-        Game[Game Contract\n(Dice / Raffle)]
+        Game["Game Contract\n(Dice / Raffle)"]
         Provider[RandomnessProvider]
         Treasury[Treasury Contract]
     end

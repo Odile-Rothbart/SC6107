@@ -68,7 +68,7 @@ graph TD
     Game -- "7. Settle & Calculate Win" --> Game
     Game -.->|8. Payout if win| Treasury
     Treasury -- "9. Transfer ETH" --> User
-
+```
 ## 4. Key Workflows
 
 This section details the interaction flow for the two implemented games.
@@ -135,6 +135,7 @@ stateDiagram-v2
     
     Won --> Idle : Payout sent
     Lost --> Idle : State updated
+```
 ### 5.2 Raffle Game Lifecycle
 
 The Raffle game operates in a continuous loop. It remains open for new players until a specific time interval has passed, at which point it locks to select a winner.
@@ -156,7 +157,8 @@ stateDiagram-v2
         Players Array Reset
         TimeStamp Updated
     end not 
-    ## 6. VRF Configuration (Sepolia Testnet)
+```
+## 6. VRF Configuration (Sepolia Testnet)
 
 The platform is configured to use **Chainlink VRF V2** on the Sepolia test network. These parameters govern the security and gas limits of the randomness requests.
 

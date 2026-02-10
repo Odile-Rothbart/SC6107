@@ -58,7 +58,12 @@ const config: HardhatUserConfig = {
 
     // 【关键修改点】告诉 hardhat-deploy 去 scripts 文件夹找部署脚本
     paths: {
-        deploy: "scripts", 
+        sources: "./contracts/src",
+        tests: "./contracts/test",
+        cache: "./cache",
+        artifacts: "./artifacts",
+        deploy: "./scripts",
+        deployments: "./deployments",
     },
 
     mocha: {

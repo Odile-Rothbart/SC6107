@@ -78,9 +78,9 @@ export default function HomeClient() {
             Go to Raffle
           </button>
         </Link>
-        <Link href="/Game2">
+        <Link href="/DiceGame">
           <button className="px-4 py-2 rounded-md border">
-            Go to Game2
+            Go to DiceGame
           </button>
         </Link>
       </section>

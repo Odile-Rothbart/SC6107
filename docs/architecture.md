@@ -147,16 +147,12 @@ stateDiagram-v2
     OPEN --> OPEN : Players Enter (buyTicket)
     
     OPEN --> CALCULATING : Time Interval Passed\n(performUpkeep / draw)
-    note left of CALCULATING
-        Entrance Closed
-        Requesting Randomness
-    end note
+  
+    note left of CALCULATING : Entrance Closed<br/>Requesting Randomness
     
     CALCULATING --> OPEN : Winner Picked & Paid
-    note right of OPEN
-        Players Array Reset
-        TimeStamp Updated
-    end not 
+
+    note right of OPEN : Players Array Reset<br/>TimeStamp Updated
 ```
 ## 6. VRF Configuration (Sepolia Testnet)
 

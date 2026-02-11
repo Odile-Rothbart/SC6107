@@ -13,14 +13,30 @@ const deployRandomnessProvider: DeployFunction = async function (hre: HardhatRun
     if (developmentChains.includes(network.name)) {
         const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
         vrfCoordinatorV2Address = vrfCoordinatorV2Mock.address;
-        const tx = await vrfCoordinatorV2Mock.createSubscription();
-        const txReceipt = await tx.wait(1);
-        subscriptionId = txReceipt.events[0].args.subId;
-        await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, ethers.utils.parseEther("2")); 
-    } else {
+
+        // ✅ 本地固定 subId，保证 determinism
+        const FIXED_SUB_ID = 1;
+        subscriptionId = FIXED_SUB_ID;
+
+        // 如果订阅还没创建/没法充值，就先创建一次再充值
+        try {
+            await vrfCoordinatorV2Mock.fundSubscription(
+            subscriptionId,
+            ethers.utils.parseEther("2")
+            );
+        } catch (e) {
+            const tx = await vrfCoordinatorV2Mock.createSubscription();
+            await tx.wait(1);
+            await vrfCoordinatorV2Mock.fundSubscription(
+            subscriptionId,
+            ethers.utils.parseEther("2")
+            );
+        }
+        } else {
         vrfCoordinatorV2Address = networkConfig[chainId!]["vrfCoordinatorV2"];
         subscriptionId = networkConfig[chainId!]["subscriptionId"];
-    }
+        }
+
 
     const cfg =
     networkConfig[chainId] ??

@@ -12,7 +12,7 @@ const accounts = PRIVATE_KEY ? [PRIVATE_KEY] : [];
 
 const config: HardhatUserConfig = {
     defaultNetwork: "hardhat",
-
+    deterministicDeployment: true,
     solidity: {
         version: "0.8.16",
         settings: {

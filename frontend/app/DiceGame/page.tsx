@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 // DiceGame contract address
 // For production: set NEXT_PUBLIC_DICEGAME_ADDRESS in .env.local
 // For development: update this address after running deployment script (04-deploy-dicegame.ts)
-const DICEGAME_ADDRESS = (process.env.NEXT_PUBLIC_DICEGAME_ADDRESS ??
+const DICEGAME_ADDRESS = (process.env.NEXT_PUBLIC_DICE_ADDRESS ??
   "0x0000000000000000000000000000000000000000") as `0x${string}`;
 // DiceGame contract ABI (only the functions we need)
 const DICEGAME_ABI = [

@@ -11,7 +11,7 @@ interface IRandomGame {
 contract RandomnessProvider is VRFConsumerBaseV2 {
     VRFCoordinatorV2Interface immutable COORDINATOR;
     
-    uint64 immutable s_subscriptionId;
+    uint256 immutable s_subscriptionId;
     bytes32 immutable i_keyHash;
     uint32 immutable i_callbackGasLimit;
     uint16 constant REQUEST_CONFIRMATIONS = 3;
@@ -21,7 +21,7 @@ contract RandomnessProvider is VRFConsumerBaseV2 {
     event RequestSent(uint256 indexed requestId, address indexed requester);
 
     constructor(
-        uint64 subscriptionId,
+        uint256 subscriptionId,
         address vrfCoordinator,
         bytes32 keyHash,
         uint32 callbackGasLimit
@@ -35,7 +35,7 @@ contract RandomnessProvider is VRFConsumerBaseV2 {
     function requestRandomWords() external returns (uint256 requestId) {
         requestId = COORDINATOR.requestRandomWords(
             i_keyHash,
-            s_subscriptionId,
+            uint64(s_subscriptionId),
             REQUEST_CONFIRMATIONS,
             i_callbackGasLimit,
             NUM_WORDS

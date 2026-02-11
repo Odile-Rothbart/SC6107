@@ -5,7 +5,7 @@ export const developmentChains = ["hardhat", "localhost"];
 export const networkConfig: { [key: number]: any } = {
     11155111: {
         name: "sepolia",
-        subscriptionId: "0", // 替换为你的真实 ID
+        subscriptionId: "0", // TODO: 替换为你从 vrf.chain.link 获取的真实 Subscription ID（例如：1234）
         gasLane: "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c",
         vrfCoordinatorV2: "0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625",
         callbackGasLimit: "500000",

@@ -266,15 +266,16 @@ export default function DiceGamePage() {
       <header className="border-b border-white/10 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="text-2xl font-bold">🎲 DiceGame</Link>
-              <Link href="/raffle" className="text-sm text-purple-300 hover:text-white">
-                Raffle
-              </Link>
+            <div className="app-title">
+              🎲 DiceGame
+              <span className="muted text-lg font-medium">Game</span>
             </div>
             <div>
               {isConnected ? (
                 <div className="flex items-center space-x-4">
+                  <Link href="/" className="btn">
+                              ← Back
+                            </Link>
                   <span className="text-sm">
                     {address?.slice(0, 6)}...{address?.slice(-4)}
                   </span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useAccount, useConnect, useDisconnect, useReadContract, useWriteContract, useWatchContractEvent } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useReadContract, useWriteContract, useWatchContractEvent, usePublicClient } from "wagmi";
 import { injected } from "wagmi/connectors";
 import { formatEther, parseEther } from "viem";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 // DiceGame contract address
 // For production: set NEXT_PUBLIC_DICEGAME_ADDRESS in .env.local
 // For development: update this address after running deployment script (04-deploy-dicegame.ts)
-const DICEGAME_ADDRESS = (process.env.NEXT_PUBLIC_DICE_ADDRESS ??
+const DICEGAME_ADDRESS = (process.env.NEXT_PUBLIC_DICEGAME_ADDRESS ??
   "0x0000000000000000000000000000000000000000") as `0x${string}`;
 // DiceGame contract ABI (only the functions we need)
 const DICEGAME_ABI = [
@@ -113,6 +113,7 @@ export default function DiceGamePage() {
   const { address, isConnected } = useAccount();
   const { connect } = useConnect();
   const { disconnect } = useDisconnect();
+  const publicClient = usePublicClient();
 
   const [selectedChoice, setSelectedChoice] = useState<number>(1);
   const [betAmount, setBetAmount] = useState<string>("0.01");
@@ -182,10 +183,12 @@ export default function DiceGamePage() {
     },
   });
 
-  // Fetch bet details
+  // Fetch bet details (using publicClient instead of useReadContract hook)
   const fetchBetDetails = async (betId: number) => {
+    if (!publicClient) return;
+    
     try {
-      const { data } = await useReadContract({
+      const data = await publicClient.readContract({
         address: DICEGAME_ADDRESS,
         abi: DICEGAME_ABI,
         functionName: "getBet",
@@ -199,36 +202,9 @@ export default function DiceGamePage() {
     }
   };
 
-  // Load player's bets when betIds change
-  useEffect(() => {
-    if (betIds && betIds.length > 0) {
-      const loadBets = async () => {
-        const bets = [];
-        // Load last 5 bets
-        const start = Math.max(0, betIds.length - 5);
-        for (let i = betIds.length - 1; i >= start; i--) {
-          try {
-            const { data } = await useReadContract({
-              address: DICEGAME_ADDRESS,
-              abi: DICEGAME_ABI,
-              functionName: "getBet",
-              args: [betIds[i]],
-            });
-            if (data) {
-              bets.push(data);
-            }
-          } catch (error) {
-            console.error("Error fetching bet:", error);
-          }
-        }
-        setPlayerBets(bets);
-        if (bets.length > 0) {
-          setLatestBet(bets[0]);
-        }
-      };
-      loadBets();
-    }
-  }, [betIds]);
+  // Note: Loading multiple bets in a loop is removed because useReadContract 
+  // cannot be called inside loops or async functions (React Hooks rules).
+  // Consider using the most recent bet from BetPlaced/BetSettled events instead.
 
   const handlePlaceBet = () => {
     if (!isConnected) {

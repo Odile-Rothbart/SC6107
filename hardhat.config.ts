@@ -37,6 +37,13 @@ const config: HardhatUserConfig = {
             chainId: 5,
             timeout: 100000,
         },
+        sepolia: {
+            url: process.env.SEPOLIA_RPC_URL || "",
+            accounts,
+            chainId: 11155111,
+            timeout: 100000,
+        },
+
     },
 
     // etherscan: {
@@ -46,10 +53,11 @@ const config: HardhatUserConfig = {
     // },
 
     gasReporter: {
-        enabled: false,
+        enabled: process.env.REPORT_GAS ? true : false,
         currency: "USD",
-        outputFile: "gasReport.txt",
+        outputFile: "gas-report.txt",
         noColors: true,
+        coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     },
 
     namedAccounts: {

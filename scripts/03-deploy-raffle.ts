@@ -165,7 +165,7 @@ const deployRafflePlatform: DeployFunction = async function (hre: HardhatRuntime
     log("----------------------------------------------------");
 
     const entranceFee = "10000000000000000"; // 0.01 ETH
-    const interval = 60; // 60 seconds
+    const interval = 300; // 300 seconds (5 minutes) - 可以根据需要修改
 
     const raffleArgs = [
         randomnessProvider.address,

@@ -193,6 +193,8 @@ Notes: these numbers are collected on the local Hardhat network; gas on testnet 
 | `platform/RandomnessProvider.sol` |  100.00 |   100.00 |  100.00 |  100.00 | —               |
 | `platform/Treasury.sol`           |   96.00 |    71.05 |   90.00 |   96.77 | 104             |
 
+Note: `mocks/VRFCoordinatorMock.sol` is a local-only test utility. Our tests exercise only the fulfillment paths required by Dice/Raffle flows; therefore some defensive branches in the mock remain uncovered. This does not affect production contracts’ coverage or correctness.
+
 ---
 
 # Part B — Testnet Acceptance Evidence (Real Chainlink VRF)

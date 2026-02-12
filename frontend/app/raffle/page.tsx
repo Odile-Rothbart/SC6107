@@ -7,6 +7,7 @@ import {
   useReadContract,
   useWriteContract,
   useWatchContractEvent,
+  usePublicClient,
 } from "wagmi";
 import { injected } from "wagmi/connectors";
 import { formatEther } from "viem";
@@ -103,6 +104,7 @@ export default function RafflePage() {
   const { connect, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
   const { writeContract, isPending: isWriting } = useWriteContract();
+  const publicClient = usePublicClient();
 
   const [winners, setWinners] = useState<WinnerEvent[]>([]);
   const [timeLeft, setTimeLeft] = useState<number>(0);
@@ -111,6 +113,76 @@ export default function RafflePage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Fetch past WinnerPicked events on mount
+  useEffect(() => {
+    const fetchPastWinners = async () => {
+      if (!mounted || !publicClient || RAFFLE_ADDRESS === "0x0000000000000000000000000000000000000000") return;
+
+      try {
+        // Use a reasonable block range (last 1000 blocks or from deployment)
+        const currentBlock = await publicClient.getBlockNumber();
+        // Raffle was deployed at block 10242393 (approximately)
+        const deploymentBlock = 10242393n;
+        const fromBlock = currentBlock > 1000n ? currentBlock - 1000n : deploymentBlock;
+
+        const logs = await publicClient.getLogs({
+          address: RAFFLE_ADDRESS,
+          event: {
+            type: "event",
+            name: "WinnerPicked",
+            inputs: [
+              { indexed: true, name: "roundId", type: "uint256" },
+              { indexed: true, name: "winner", type: "address" },
+              { indexed: false, name: "amount", type: "uint256" },
+            ],
+          },
+          fromBlock: fromBlock > deploymentBlock ? fromBlock : deploymentBlock,
+          toBlock: "latest",
+        });
+
+        const pastWinners = logs.map((log: any) => ({
+          roundId: log.args.roundId?.toString() || "0",
+          winner: log.args.winner || "",
+          amount: log.args.amount ? formatEther(log.args.amount) : "0",
+        })).reverse(); // Most recent first
+
+        setWinners(pastWinners.slice(0, 10));
+      } catch (error) {
+        console.error("Error fetching past winners:", error);
+        // Fallback: try with smaller range if error
+        try {
+          const currentBlock = await publicClient.getBlockNumber();
+          const logs = await publicClient.getLogs({
+            address: RAFFLE_ADDRESS,
+            event: {
+              type: "event",
+              name: "WinnerPicked",
+              inputs: [
+                { indexed: true, name: "roundId", type: "uint256" },
+                { indexed: true, name: "winner", type: "address" },
+                { indexed: false, name: "amount", type: "uint256" },
+              ],
+            },
+            fromBlock: currentBlock - 500n,
+            toBlock: "latest",
+          });
+
+          const pastWinners = logs.map((log: any) => ({
+            roundId: log.args.roundId?.toString() || "0",
+            winner: log.args.winner || "",
+            amount: log.args.amount ? formatEther(log.args.amount) : "0",
+          })).reverse();
+
+          setWinners(pastWinners.slice(0, 10));
+        } catch (fallbackError) {
+          console.error("Fallback also failed:", fallbackError);
+        }
+      }
+    };
+
+    fetchPastWinners();
+  }, [mounted, publicClient]);
 
   const { data: currentRound, refetch: refetchRound } = useReadContract({
     address: RAFFLE_ADDRESS,

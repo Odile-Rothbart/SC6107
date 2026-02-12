@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.16;
 
-import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
+import "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol";
 import "../platform/RandomnessProvider.sol";
 import "../platform/Treasury.sol";
 
@@ -27,7 +27,7 @@ error Raffle__NoPlayers();
  *      - Integrated with Treasury for secure payouts
  *      - Added double-settlement prevention via requestId mapping
  */
-contract Raffle is KeeperCompatibleInterface {
+contract Raffle is AutomationCompatibleInterface {
 	/* Types */
 	enum RaffleState {
 		OPEN,

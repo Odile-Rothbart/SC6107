@@ -114,14 +114,13 @@ Unit tests are implemented per-module (games/platform) under Hardhat. Local rand
   Coverage: 87.32% lines (uncovered: 287–289).
 
 ### 5.2 Integration Tests (End-to-End)
-End-to-end sanity is verified via `contracts/test/smoke.test.ts` across
+End-to-end sanity is verified via `contracts/test/smoke.test.ts` across  
 **Game ↔ RandomnessProvider ↔ VRFCoordinatorV2Mock ↔ Treasury**:
 
 - Dice: `placeBet` → request randomness → mock fulfill → round/bet reaches settled state.
 - Raffle: `enterRaffle` → time elapse → `performUpkeep` → mock fulfill → winner is produced and state returns to OPEN.
 
 ### 5.3 Invariant-Style Checks
-
 Invariant-style properties are enforced via dedicated assertions in `contracts/test/invariants.test.ts` (Hardhat + `VRFCoordinatorV2Mock`):
 
 - **INV-1 Treasury permissioning:** `Treasury.payout` rejects unauthorized callers (revert asserted).
@@ -130,23 +129,20 @@ Invariant-style properties are enforced via dedicated assertions in `contracts/t
 - **INV-4 End-to-end lifecycle integrity (Raffle):** enter → upkeep → VRF fulfill completes a round, records a non-zero winner, and resets the raffle state to `OPEN`.
 - **INV-5 Repeated trials (Dice):** multiple randomized bets settle successfully without breaking core state (player linkage and settled status).
 
-
 ### 5.4 Gas Optimization Tests / Measurements
-
-Gas is measured locally on Hardhat using `txReceipt.gasUsed` (`contracts/test/gas.test.ts`). 
+Gas is measured locally on Hardhat using `txReceipt.gasUsed` (`contracts/test/gas.test.ts`).
 
 | Operation | GasUsed (local) |
 | --- | ---: |
-| Dice.placeBet | 292,589 |
-| VRF.fulfillRandomWords (Dice path) | 55,857 |
-| Raffle.enterRaffle (p1) | 94,184 |
-| Raffle.enterRaffle (p2) | 59,984 |
-| Raffle.performUpkeep | 129,110 |
-| VRF.fulfillRandomWords (Raffle path) | 158,716 |
-| Treasury.adminWithdraw | 32,522 |
+| Dice.placeBet | 329,469 |
+| VRF.fulfillRandomWords (Dice path) | 65,201 |
+| Raffle.enterRaffle (p1) | 95,904 |
+| Raffle.enterRaffle (p2) | 61,704 |
+| Raffle.performUpkeep | 148,717 |
+| VRF.fulfillRandomWords (Raffle path) | 172,681 |
+| Treasury.adminWithdraw | 34,970 |
 
 Notes: these numbers are collected on the local Hardhat network; gas on testnet may vary due to network/basefee and warm/cold storage effects.
-
 
 ---
 
@@ -182,10 +178,10 @@ Notes: these numbers are collected on the local Hardhat network; gas on testnet 
 
 ### Coverage Summary (All files)
 
-- Statements: **91.13%**
-- Branches: **71.74%**
-- Functions: **87.80%**
-- Lines: **93.64%** (meets >=80% requirement)
+- Statements: **86.52%**
+- Branches: **67.65%**
+- Functions: **84.44%**
+- Lines: **89.74%** (meets >=80% requirement)
 
 ### Per-Contract Coverage
 
@@ -193,10 +189,9 @@ Notes: these numbers are collected on the local Hardhat network; gas on testnet 
 | --------------------------------- | ------: | -------: | ------: | ------: | --------------- |
 | `games/DiceGame.sol`              |   97.62 |    82.14 |   92.31 |   98.36 | 278             |
 | `games/Raffle.sol`                |   83.02 |    61.54 |   80.00 |   87.32 | 287–289         |
-| `mocks/VRFCoordinatorMock.sol`    |  100.00 |   100.00 |  100.00 |  100.00 | —               |
+| `mocks/VRFCoordinatorMock.sol`    |   52.94 |    30.00 |   50.00 |   60.87 | 144, 163, 164   |
 | `platform/RandomnessProvider.sol` |  100.00 |   100.00 |  100.00 |  100.00 | —               |
 | `platform/Treasury.sol`           |   96.00 |    71.05 |   90.00 |   96.77 | 104             |
-
 
 ---
 

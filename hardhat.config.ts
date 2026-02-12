@@ -1,7 +1,7 @@
 import "dotenv/config";
 import "hardhat-gas-reporter";
 import "hardhat-deploy";
-// import "solidity-coverage";
+import "solidity-coverage";
 // import "hardhat-deploy-ethers";
 import "@nomiclabs/hardhat-ethers";
 import { HardhatUserConfig } from "hardhat/config";

@@ -8,7 +8,6 @@ import { injected } from "wagmi/connectors";
 
 const queryClient = new QueryClient();
 
-// ✅ 必须提供：Sepolia RPC（你队友给你的那个）
 const sepoliaRpc = process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL;
 
 if (!sepoliaRpc) {
@@ -18,7 +17,6 @@ if (!sepoliaRpc) {
 }
 
 const config = createConfig({
-  // ✅ 只启用 Sepolia，避免默认/回退连到 hardhat 8545
   chains: [sepolia],
   connectors: [injected()],
   transports: {

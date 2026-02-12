@@ -160,9 +160,9 @@ The platform is configured to use **Chainlink VRF V2** on the Sepolia test netwo
 
 | Parameter | Value (Sepolia) | Description |
 | :--- | :--- | :--- |
-| **VRF Coordinator** | `0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625` | The address of the Chainlink VRF Coordinator contract. |
-| **Key Hash (Gas Lane)** | `0x474e34a077df58807dbe9c96d3cabb68bd679f00705f1452547e333b1e4ac666` | 150 gwei Key Hash. Determines the maximum gas price for the callback transaction. |
-| **Subscription ID** | `[REPLACE_WITH_YOUR_ID]` | **TODO**: Update this after creating and funding a subscription on vrf.chain.link. |
+| **VRF Coordinator** | `0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B` | The address of the Chainlink VRF V2.5 Coordinator contract. |
+| **Key Hash (Gas Lane)** | `0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae` | 500 gwei Key Hash. Determines the maximum gas price for the callback transaction. |
+| **Subscription ID** | `37343118368090211153610401976496944694401828535371594389547337555701187037682` | VRF V2.5 subscription ID (funded with ETH). |
 | **Callback Gas Limit** | `500,000` | The limit of gas the callback function (`fulfillRandomWords`) can consume. |
 | **Request Confirmations** | `3` | The number of blocks the VRF waits before generating the random number (security buffer). |
 
@@ -175,13 +175,13 @@ The platform is configured to use **Chainlink VRF V2** on the Sepolia test netwo
 | Contract | Address |
 | :--- | :--- |
 | **Network** | **Sepolia Testnet** (Chain ID: 11155111) |
-| **RandomnessProvider** | `0x...` |
-| **Treasury** | `0x...` |
-| **DiceGame** | `0x...` |
-| **Raffle** | `0x...` |
+| **RandomnessProvider** | `0x8E03083aF8CCb5b45Dd0fFf12dd45682403dDd5e` |
+| **Treasury** | `0xF062f2A710A9a5dcA35fE0b4280BECf32394C78f` |
+| **DiceGame** | `0xDb27dF37443269FD927463aFdE3D115Dc63cEE93` |
+| **Raffle** | `0x4E8e5BB5B7f4AE47BBDD9e006E832199dbe68131` |
 
 ### Post-Deployment Checklist
-- [ ] Contracts verified on Etherscan?
-- [ ] VRF Subscription funded with LINK?
-- [ ] `RandomnessProvider` added as a Consumer to the VRF Subscription?
-- [ ] `DiceGame` and `Raffle` authorized in `RandomnessProvider`?
+- [x] Contracts verified on Etherscan
+- [x] VRF Subscription funded with ETH
+- [x] `RandomnessProvider` added as a Consumer to the VRF Subscription
+- [x] `DiceGame` and `Raffle` authorized in `RandomnessProvider`

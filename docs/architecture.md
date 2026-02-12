@@ -24,7 +24,7 @@ The architecture follows a modular design to ensure security and upgradeability.
     * The vault managing the platform's liquidity.
     * **Role**: Holds all funds. Only authorized Game contracts can request payouts to winners. Separates fund management from game logic.
 * **`games/DiceGame.sol`**:
-    * **Logic**: Users bet on specific outcomes (e.g., Roll < 50).
+    * **Logic**: Users bet on a dice roll outcome (1-6). Win if the dice result matches their choice.
     * **Flow**: Immediate `requestRandomWords` upon betting.
 * **`games/Raffle.sol`**:
     * **Logic**: Users buy tickets to enter a pool.
@@ -74,41 +74,43 @@ graph TD
 This section details the interaction flow for the two implemented games.
 
 ### 4.1 DiceGame: Instant Settlement Flow
-The DiceGame allows users to bet on whether a random number (1-100) will be lower than a threshold (50).
+The DiceGame allows users to bet on a dice roll outcome (1-6).
 
 1.  **Bet Placement**:
-    * User calls `DiceGame.rollUnder(50)` sending ETH (e.g., 0.01 ETH).
-    * Contract verifies `msg.value` limits and Treasury solvency.
-    * **Event**: Emits `RollRequested(requestId, player, amount, rollUnder)`.
+    * User calls `DiceGame.placeBet(choice)` sending ETH (e.g., 0.01 ETH), where `choice` is a number from 1 to 6.
+    * Contract verifies `msg.value` limits (min/max bet) and validates choice (1-6).
+    * Bet amount is immediately transferred to Treasury.
+    * **Event**: Emits `BetPlaced(betId, player, amount, choice, timestamp)`.
 2.  **Randomness Request**:
     * `DiceGame` invokes `RandomnessProvider.requestRandomWords()`.
     * `RandomnessProvider` calls the **Chainlink VRF Coordinator**.
+    * **Event**: Emits `RandomnessRequested(betId, requestId)`.
 3.  **Fulfillment (Callback)**:
     * Chainlink VRF returns a random number via `rawFulfillRandomWords`.
     * `RandomnessProvider` routes the callback to `DiceGame.fulfillRandomness()`.
 4.  **Settlement**:
-    * **Logic**: `result = (randomWord % 100) + 1`.
-    * **Win Condition**: If `result < 50`, the player wins.
-    * **Payout**: `DiceGame` calls `Treasury.payout(player, winAmount)`.
-    * **Event**: Emits `RollSettled(requestId, winner, payout)`.
+    * **Logic**: `diceResult = (randomness % 6) + 1` (generates 1-6).
+    * **Win Condition**: If `diceResult == choice`, the player wins.
+    * **Payout**: If won, `DiceGame` calls `Treasury.payout(player, betAmount * 6 * 0.98)` (6x multiplier with 2% house edge).
+    * **Event**: Emits `BetSettled(betId, player, diceResult, won, payout)`.
 
 ### 4.2 Raffle: Pooled Lottery Flow
 The Raffle game accumulates tickets and picks one winner periodically.
 
 1.  **Entry**:
     * User calls `enterRaffle()` with the entrance fee.
-    * Address is added to the `s_players` array.
+    * Address is added to the current round's `players` array.
 2.  **Trigger (Draw)**:
-    * Condition: `(block.timestamp - s_lastTimeStamp) > i_interval`.
-    * Admin or Chainlink Keepers call `performUpkeep()` (or `requestRandomWinner`).
+    * Condition: `(block.timestamp - round.startTime) > i_interval`.
+    * Chainlink Automation calls `performUpkeep()`.
     * Contract changes state to `CALCULATING`.
 3.  **Randomness & Selection**:
     * Provider requests randomness.
-    * On callback: `indexOfWinner = randomWord % s_players.length`.
-    * `recentWinner` is set to `s_players[indexOfWinner]`.
+    * On callback: `indexOfWinner = randomness % round.players.length`.
+    * Winner is set to `round.players[indexOfWinner]`.
 4.  **Payout**:
-    * The entire contract balance (minus fees) is transferred to the winner via `Treasury`.
-    * Array `s_players` is reset. State returns to `OPEN`.
+    * The entire prize pool is transferred to the winner via `Treasury`.
+    * New round starts with empty players array. State returns to `OPEN`.
 
 ---
 
@@ -120,21 +122,21 @@ The following diagrams illustrate the lifecycle of a game request.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Idle
+    [*] --> OPEN
     
-    Idle --> RequestSent : Player bets (rollUnder)
-    note right of RequestSent
+    OPEN --> CALCULATING : Player places bet (choice 1-6)
+    note right of CALCULATING
         Waiting for Chainlink VRF
         (Async ~2 blocks)
     end note
     
-    RequestSent --> Fulfilled : VRF Callback
+    CALCULATING --> SETTLED : VRF Callback
     
-    Fulfilled --> Won : result < 50
-    Fulfilled --> Lost : result >= 50
+    SETTLED --> Won : diceResult == choice
+    SETTLED --> Lost : diceResult != choice
     
-    Won --> Idle : Payout sent
-    Lost --> Idle : State updated
+    Won --> [*] : Payout sent (6x * 0.98)
+    Lost --> [*] : Bet stays in Treasury
 ```
 ### 5.2 Raffle Game Lifecycle
 
@@ -156,7 +158,7 @@ stateDiagram-v2
 ```
 ## 6. VRF Configuration (Sepolia Testnet)
 
-The platform is configured to use **Chainlink VRF V2** on the Sepolia test network. These parameters govern the security and gas limits of the randomness requests.
+The platform is configured to use **Chainlink VRF V2.5** on the Sepolia test network. These parameters govern the security and gas limits of the randomness requests.
 
 | Parameter | Value (Sepolia) | Description |
 | :--- | :--- | :--- |

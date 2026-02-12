@@ -169,7 +169,7 @@ npm run dev
    - Click "Enter Raffle" 
    - Pay 0.01 ETH entry fee
 2. **Wait for Draw**: Raffle draws every 5 minutes automatically
-3. **Check Winner**: Winner receives 90% of the prize pool (10% goes to treasury)
+3. **Check Winner**: Winner receives 100% of the prize pool
 
 ### Troubleshooting
 

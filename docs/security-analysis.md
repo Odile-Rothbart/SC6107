@@ -54,9 +54,9 @@ This analysis considers the following adversarial capabilities and attack vector
 
 ### 3.1 VRF Integration Architecture
 
-The platform abstracts randomness generation through `RandomnessProvider.sol`, which interfaces with Chainlink VRF v2 (on Sepolia) or `VRFCoordinatorMock` (for local testing).
+The platform abstracts randomness generation through `RandomnessProvider.sol`, which interfaces with Chainlink VRF v2.5 (on Sepolia) or `VRFCoordinatorMock` (for local testing).
 
-**Security Property:** Only the official Chainlink VRF Coordinator can invoke `fulfillRandomWords()` in the `RandomnessProvider` contract. This is enforced by the `VRFConsumerBaseV2` base contract, preventing unauthorized randomness injection.
+**Security Property:** Only the official Chainlink VRF Coordinator can invoke `fulfillRandomWords()` in the `RandomnessProvider` contract. This is enforced by the `VRFConsumerBaseV2Plus` base contract, preventing unauthorized randomness injection.
 
 ### 3.2 Request Tracking & Replay Protection
 
@@ -124,8 +124,8 @@ All fund transfers are routed through `Treasury.sol`, which implements the Check
 **Raffle:**
 - Rounds transition through states: `OPEN → CALCULATING → OPEN`
 - The `CALCULATING` state prevents new entries and additional draw requests
-- `s_players` array is reset after winner selection
-- Winner is recorded in `s_recentWinner` before payout
+- Current round's `players` array is used for winner selection
+- Winner is recorded in `round.winner` before payout
 
 ---
 
@@ -141,7 +141,7 @@ All fund transfers are routed through `Treasury.sol`, which implements the Check
 **Raffle:**
 - Entry is closed when state transitions to `CALCULATING`
 - No new entries can be added after the draw request is initiated
-- Winner selection is based on the `s_players` array snapshot at draw time
+- Winner selection is based on the current round's `players` array snapshot at draw time
 
 ### 5.2 Solvency & Payout Constraints
 

@@ -123,8 +123,8 @@ export default function RafflePage() {
         // Use a reasonable block range (last 1000 blocks or from deployment)
         const currentBlock = await publicClient.getBlockNumber();
         // Raffle was deployed at block 10242393 (approximately)
-        const deploymentBlock = 10242393n;
-        const fromBlock = currentBlock > 1000n ? currentBlock - 1000n : deploymentBlock;
+        const deploymentBlock = BigInt(10242393);
+        const fromBlock = currentBlock > BigInt(1000) ? currentBlock - BigInt(1000) : deploymentBlock;
 
         const logs = await publicClient.getLogs({
           address: RAFFLE_ADDRESS,
@@ -164,7 +164,7 @@ export default function RafflePage() {
                 { indexed: false, name: "amount", type: "uint256" },
               ],
             },
-            fromBlock: currentBlock - 500n,
+            fromBlock: currentBlock - BigInt(500),
             toBlock: "latest",
           });
 
@@ -340,7 +340,7 @@ export default function RafflePage() {
               <div className="glass-card p-4">
                 <div className="text-xs muted mb-1">Status</div>
                 <div className={`text-lg font-bold ${roundData?.state === 0 ? "text-green-300" : "text-yellow-300"}`}>
-                  {roundData ? STATE_NAMES[roundData.state] : "..."}
+                  {roundData ? STATE_NAMES[roundData.state as number] : "..."}
                 </div>
               </div>
 
@@ -394,7 +394,7 @@ export default function RafflePage() {
               )}
               {isConnected && roundData && roundData.state !== 0 && (
                 <div className="mb-4 p-3 rounded-lg bg-yellow-500/15 border border-yellow-500/25 text-sm">
-                  ⚠️ Round is currently {STATE_NAMES[roundData.state]}. Please wait for the next round.
+                  ⚠️ Round is currently {STATE_NAMES[roundData.state as number]}. Please wait for the next round.
                 </div>
               )}
               {isConnected && roundData && roundData.state === 0 && (

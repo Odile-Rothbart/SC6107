@@ -66,26 +66,25 @@ Our custom gas test (`contracts/test/gas.test.ts`) measures transaction-level ga
 
 | Function | Contract | Avg Gas | Frequency | Impact |
 |----------|----------|---------|-----------|--------|
-| `placeBet()` | DiceGame | 291,274 | Very High | Critical |
-| `enterRaffle()` | Raffle | 83,683 | High | Important |
-| `performUpkeep()` | Raffle | 129,132 | Medium | Important |
-| `fulfillRandomness()` | DiceGame | 71,611 | Very High | Critical |
-| `requestRandomWords()` | RandomnessProvider | 91,320 | High | Important |
-| `payout()` | Treasury | 39,645 | High | Optimized |
+| `placeBet()` | DiceGame | 329,469 | Very High | Critical |
+| `enterRaffle()` | Raffle | 95,904 / 61,704 | High | Important |
+| `performUpkeep()` | Raffle | 148,717 | Medium | Important |
+| `fulfillRandomness()` | DiceGame | 65,201 | Very High | Critical |
+| `fulfillRandomness()` | Raffle | 172,681 | High | Important |
+| `adminWithdraw()` | Treasury | 34,970 | Low | Administrative |
 
 ### Function Categories
 
 **Player-Facing (User Pays Gas)**
-- `DiceGame.placeBet()` - Most expensive user operation (291k gas)
-- `Raffle.enterRaffle()` - Moderate cost (83k gas)
+- `DiceGame.placeBet()` - Most expensive user operation (329k gas)
+- `Raffle.enterRaffle()` - Moderate cost (96k first entry, 62k subsequent)
 
 **Automated/Backend (Platform Pays Gas)**
-- `Raffle.performUpkeep()` - Triggered by Chainlink Automation
-- `fulfillRandomness()` - VRF callback (paid by subscription)
+- `Raffle.performUpkeep()` - Triggered by Chainlink Automation (149k gas)
+- `fulfillRandomness()` - VRF callback (paid by subscription, 65k-173k gas)
 
 **Administrative**
-- `Treasury.payout()` - Called by game contracts
-- `Treasury.adminWithdraw()` - Owner operations
+- `Treasury.adminWithdraw()` - Owner operations (35k gas)
 
 ---
 
@@ -233,31 +232,31 @@ Based on `gas-report.txt` and local testing:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ DiceGame Operations                                         │
-├────────────────────────┬──────────┬──────────┬─────────────┤
-│ Method                 │ Min      │ Max      │ Avg         │
-├────────────────────────┼──────────┼──────────┼─────────────┤
-│ placeBet()             │ 275,489  │ 292,589  │ 291,274     │
-│ fulfillRandomness()    │  37,001  │  80,264  │  71,611     │
-└────────────────────────┴──────────┴──────────┴─────────────┘
+├────────────────────────┬─────────────────────────────────────┤
+│ Method                 │ GasUsed (local)                     │
+├────────────────────────┼─────────────────────────────────────┤
+│ placeBet()             │ 329,469                             │
+│ fulfillRandomness()    │  65,201                             │
+└────────────────────────┴─────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
 │ Raffle Operations                                           │
-├────────────────────────┬──────────┬──────────┬─────────────┤
-│ Method                 │ Min      │ Max      │ Avg         │
-├────────────────────────┼──────────┼──────────┼─────────────┤
-│ enterRaffle()          │  60,006  │  94,206  │  83,683     │
-│ performUpkeep()        │    -     │    -     │ 129,132     │
-└────────────────────────┴──────────┴──────────┴─────────────┘
+├────────────────────────┬─────────────────────────────────────┤
+│ Method                 │ GasUsed (local)                     │
+├────────────────────────┼─────────────────────────────────────┤
+│ enterRaffle() (p1)     │  95,904                             │
+│ enterRaffle() (p2)     │  61,704                             │
+│ performUpkeep()        │ 148,717                             │
+│ fulfillRandomWords()   │ 172,681                             │
+└────────────────────────┴─────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
 │ Platform Operations                                         │
-├────────────────────────┬──────────┬──────────┬─────────────┤
-│ Method                 │ Min      │ Max      │ Avg         │
-├────────────────────────┼──────────┼──────────┼─────────────┤
-│ requestRandomWords()   │    -     │    -     │  91,320     │
-│ Treasury.payout()      │    -     │    -     │  39,645     │
-│ Treasury.setGame()     │    -     │    -     │  47,840     │
-└────────────────────────┴──────────┴──────────┴─────────────┘
+├────────────────────────┬─────────────────────────────────────┤
+│ Method                 │ GasUsed (local)                     │
+├────────────────────────┼─────────────────────────────────────┤
+│ Treasury.adminWithdraw │  34,970                             │
+└────────────────────────┴─────────────────────────────────────┘
 ```
 
 ### 4.2 Deployment Costs
@@ -281,10 +280,11 @@ At current gas prices (example: 30 gwei, ETH = $3,000):
 
 | Operation | Gas | Cost (ETH) | Cost (USD) |
 |-----------|-----|------------|------------|
-| Place Dice Bet | 291,274 | 0.0087 ETH | $26.18 |
-| Enter Raffle | 83,683 | 0.0025 ETH | $7.53 |
-| Settle Dice Bet | 71,611 | 0.0021 ETH | $6.44 |
-| Perform Upkeep | 129,132 | 0.0039 ETH | $11.62 |
+| Place Dice Bet | 329,469 | 0.0099 ETH | $29.65 |
+| Settle Dice Bet | 65,201 | 0.0020 ETH | $5.87 |
+| Enter Raffle (first) | 95,904 | 0.0029 ETH | $8.63 |
+| Enter Raffle (subsequent) | 61,704 | 0.0019 ETH | $5.55 |
+| Perform Upkeep | 148,717 | 0.0045 ETH | $13.38 |
 
 **Note**: VRF fulfillment costs are paid by the Chainlink subscription, not end users.
 
@@ -426,9 +426,9 @@ Our platform achieves competitive gas efficiency through:
 - **Testing**: Comprehensive gas reporting and benchmarking
 
 **Key Metrics**:
-- DiceGame bet: ~291k gas (acceptable for instant-settlement game)
-- Raffle entry: ~83k gas (competitive with similar protocols)
-- Settlement: ~71k gas (highly optimized)
+- DiceGame bet: ~329k gas (instant-settlement game with VRF request)
+- Raffle entry: ~96k gas first entry, ~62k subsequent (competitive with similar protocols)
+- Settlement: ~65k gas (Dice), ~173k gas (Raffle) - highly optimized
 
 **Next Steps**:
 1. Implement batch operations for power users

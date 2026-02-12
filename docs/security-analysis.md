@@ -1,6 +1,7 @@
 # Security Analysis
 
-Decentralized Randomness Gaming Platform
+**Project Name**:Trustless Gaming: An On-Chain Verifiable Randomness Platform
+**Type**: Option 4 (Verifiable Randomness Game)
 
 ---
 

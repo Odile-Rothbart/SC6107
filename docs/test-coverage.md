@@ -256,7 +256,6 @@ The goal of testnet validation is to confirm that the end-to-end lifecycle works
 
 **Evidence (Explorer)**
 - Dice request tx (user): **0x2729be9d564eec210a444a4ca29c5662580a0ef79f130fb8f32794ae51ae82a0**
-- Dice VRF fulfill tx (Chainlink callback): **[PASTE TX HASH]**
 - Bet result: **![alt text](image.png)**
 
 ---
@@ -287,6 +286,6 @@ The goal of testnet validation is to confirm that the end-to-end lifecycle works
 
 ## 12. Notes / Limitations
 
-- Testnet validation is an acceptance-level smoke check with real VRF; local unit/invariant/coverage tests remain the primary correctness baseline (see Part A).
+- Testnet validation is an acceptance-level smoke check with real VRF; local unit/invariant/coverage tests remain the primary correctness baseline (Part A).
 - VRF fulfillment is asynchronous and depends on testnet conditions; callback timing may vary.
 - Gas and coverage numbers are reported from local Hardhat tests (Part A). Testnet fees/cost may vary due to basefee and network conditions.

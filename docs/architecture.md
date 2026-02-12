@@ -1,7 +1,7 @@
 # Architecture & System Design
 
 ## 1. Project Overview
-**Project Name**: Decentralized Randomness Gaming Platform
+**Project Name**:Trustless Gaming: An On-Chain Verifiable Randomness Platform
 **Type**: Option 4 (Verifiable Randomness Game)
 
 This platform demonstrates a secure, transparent, and verifiable gaming ecosystem built on Ethereum (Sepolia Testnet). It leverages **Chainlink VRF (Verifiable Random Function)** to ensure true randomness for all game outcomes, decoupling the RNG (Random Number Generation) logic from the game mechanics.

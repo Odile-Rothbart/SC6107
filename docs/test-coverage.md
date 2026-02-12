@@ -1,6 +1,7 @@
 # Test & Coverage Report
 
-On-Chain Verifiable Random Game Platform
+**Project Name**:Trustless Gaming: An On-Chain Verifiable Randomness Platform
+**Type**: Option 4 (Verifiable Randomness Game)
 
 ---
 

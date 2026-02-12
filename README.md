@@ -529,10 +529,6 @@ See [docs/test-coverage.md](docs/test-coverage.md) for detailed test report.
 └── README.md
 ```
 
-## 🤝 Contributing
-
-This is an academic project for SC6107. Contributions are welcome for educational purposes.
-
 ### Development Workflow
 
 1. Fork the repository

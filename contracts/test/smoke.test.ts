@@ -33,7 +33,7 @@ describe("Smoke (Hardhat-deploy) — Dice + Raffle + VRFCoordinatorMock", functi
 
     // These names must match your deploy script contract names.
     // Adjust here if your deployment names differ.
-    vrf = await ethers.getContract("VRFCoordinatorV2Mock");
+    vrf = await ethers.getContract("VRFCoordinatorMock");
     randomnessProvider = await ethers.getContract("RandomnessProvider");
     treasury = await ethers.getContract("Treasury");
     dice = await ethers.getContract("DiceGame");

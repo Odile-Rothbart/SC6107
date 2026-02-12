@@ -19,7 +19,7 @@ async function increaseTime(seconds: number) {
   await network.provider.send("evm_mine");
 }
 
-describe("Invariant-style checks (local, Hardhat + VRFCoordinatorV2Mock)", function () {
+describe("Invariant-style checks (local, Hardhat + VRFCoordinatorMock)", function () {
   let vrf: any;
   let provider: any;
   let treasury: any;
@@ -33,7 +33,7 @@ describe("Invariant-style checks (local, Hardhat + VRFCoordinatorV2Mock)", funct
     [deployer, user1, user2] = await ethers.getSigners();
     await deployments.fixture();
 
-    vrf = await ethers.getContract("VRFCoordinatorV2Mock");
+    vrf = await ethers.getContract("VRFCoordinatorMock");
     provider = await ethers.getContract("RandomnessProvider");
     treasury = await ethers.getContract("Treasury");
     dice = await ethers.getContract("DiceGame");

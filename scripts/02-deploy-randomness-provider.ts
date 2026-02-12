@@ -12,27 +12,15 @@ const deployRandomnessProvider: DeployFunction = async function (hre: HardhatRun
     let subscriptionId;
 
     if (developmentChains.includes(network.name)) {
-        const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
+        const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorMock");
         vrfCoordinatorV2Address = vrfCoordinatorV2Mock.address;
 
         // ✅ 本地固定 subId，保证 determinism
         const FIXED_SUB_ID = 1;
         subscriptionId = FIXED_SUB_ID;
 
-        // 如果订阅还没创建/没法充值，就先创建一次再充值
-        try {
-            await vrfCoordinatorV2Mock.fundSubscription(
-                subscriptionId,
-                ethers.utils.parseEther("2")
-            );
-        } catch (e) {
-            const tx = await vrfCoordinatorV2Mock.createSubscription();
-            await tx.wait(1);
-            await vrfCoordinatorV2Mock.fundSubscription(
-                subscriptionId,
-                ethers.utils.parseEther("2")
-            );
-        }
+        // VRF v2.5 mock 不需要创建订阅和充值，直接使用即可
+        log("使用 VRF v2.5 Mock，订阅 ID: " + subscriptionId);
     } else {
         // Sepolia 或其他测试网
         vrfCoordinatorV2Address = networkConfig[chainId]["vrfCoordinatorV2"];
@@ -65,9 +53,8 @@ const deployRandomnessProvider: DeployFunction = async function (hre: HardhatRun
     });
 
     if (developmentChains.includes(network.name)) {
-        const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
-        await vrfCoordinatorV2Mock.addConsumer(subscriptionId, randomnessProvider.address);
-        log("✅ 已在本地 Mock 中添加 Consumer！");
+        // VRF v2.5 mock 不需要手动添加 consumer
+        log("✅ VRF v2.5 Mock 部署完成！");
     }
     
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {

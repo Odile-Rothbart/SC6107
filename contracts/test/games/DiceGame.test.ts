@@ -30,7 +30,7 @@ describe("DiceGame Contract Tests", function () {
   let diceGame: any;
   let randomnessProvider: any;
   let treasury: any;
-  let vrfCoordinatorV2Mock: any;
+  let vrfCoordinatorMock: any;
   let owner: any;
   let player1: any;
   let player2: any;
@@ -72,7 +72,7 @@ describe("DiceGame Contract Tests", function () {
 
     // Get VRF Mock if on local network
     if (developmentChains.includes(network.name)) {
-      vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
+      vrfCoordinatorMock = await ethers.getContract("VRFCoordinatorMock");
     }
   });
 

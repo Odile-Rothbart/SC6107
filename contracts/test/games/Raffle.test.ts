@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { ethers, network, deployments } from "hardhat";
 import { BigNumber } from "ethers";
-// import "@nomicfoundation/hardhat-chai-matchers";
 
-// Inline to avoid module resolution issues
-const developmentChains = ["hardhat", "localhost"];
+/**
+ * Raffle Contract Unit Tests with VRF v2.5 Mock
+ */
 
 async function mustRevert(p: Promise<any>, contains?: string) {
   try {
@@ -31,7 +31,7 @@ describe("Raffle Contract Tests", function () {
   let raffle: any;
   let randomnessProvider: any;
   let treasury: any;
-  let vrfCoordinatorV2Mock: any;
+  let vrfCoordinatorMock: any;
   let owner: any;
   let player1: any;
   let player2: any;
@@ -45,8 +45,23 @@ describe("Raffle Contract Tests", function () {
 
     [owner, player1, player2, player3] = await ethers.getSigners();
 
-    randomnessProvider = await ethers.getContract("RandomnessProvider");
+    // Get deployed contracts
     treasury = await ethers.getContract("Treasury");
+    vrfCoordinatorMock = await ethers.getContract("VRFCoordinatorMock");
+    
+    // Deploy RandomnessProvider with mock coordinator
+    const RandomnessProvider = await ethers.getContractFactory("RandomnessProvider");
+    const subscriptionId = "1";
+    const keyHash = "0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae";
+    const callbackGasLimit = 500000;
+    
+    randomnessProvider = await RandomnessProvider.deploy(
+      subscriptionId,
+      vrfCoordinatorMock.address,
+      keyHash,
+      callbackGasLimit
+    );
+    await randomnessProvider.deployed();
     
     // Deploy Raffle
     const Raffle = await ethers.getContractFactory("Raffle");
@@ -66,11 +81,6 @@ describe("Raffle Contract Tests", function () {
       to: treasury.address,
       value: ethers.utils.parseEther("10"),
     });
-
-    // Get VRF Mock if on local network
-    if (developmentChains.includes(network.name)) {
-      vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
-    }
   });
 
   describe("Deployment", function () {
@@ -116,11 +126,11 @@ describe("Raffle Contract Tests", function () {
       // Enter players
       await raffle.connect(player1).enterRaffle({ value: entranceFee });
       
-      // Manually trigger upkeep (this will change state to CALCULATING)
-      // First, we need to fast forward time
+      // Fast forward time
       await network.provider.send("evm_increaseTime", [interval + 1]);
       await network.provider.send("evm_mine", []);
 
+      // Trigger upkeep (changes state to CALCULATING)
       await raffle.performUpkeep("0x");
 
       // Now try to enter - should fail
@@ -169,16 +179,10 @@ describe("Raffle Contract Tests", function () {
 
   describe("Complete Flow (with VRF Mock)", function () {
     it("should complete full round: enter → draw → payout", async function () {
-      if (!developmentChains.includes(network.name)) {
-        this.skip(); // Skip on testnets
-      }
-
       // Players enter
       await raffle.connect(player1).enterRaffle({ value: entranceFee });
       await raffle.connect(player2).enterRaffle({ value: entranceFee });
       await raffle.connect(player3).enterRaffle({ value: entranceFee });
-
-      const prizePool = entranceFee.mul(3);
 
       // Fast forward time
       await network.provider.send("evm_increaseTime", [interval + 1]);
@@ -195,17 +199,18 @@ describe("Raffle Contract Tests", function () {
       const roundId = requestEvent.args.roundId;
       expect(roundId.toString()).to.equal("1");
 
-      // Simulate VRF callback
-      const randomWords = [999]; // Fixed random number for testing
-      await vrfCoordinatorV2Mock.fulfillRandomWords(requestId, randomnessProvider.address);
-
-      // Wait for the callback to complete
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Simulate VRF callback using mock
+      await vrfCoordinatorMock.fulfillRandomWords(requestId, randomnessProvider.address);
 
       // Check winner was picked
       const round = await raffle.getRound(1);
       expect(round.state.toString()).to.equal("2"); // SETTLED = 2
       expect(round.winner).to.not.equal(ethers.constants.AddressZero);
+
+      // Verify winner is one of the players
+      const winner = round.winner;
+      const isValidWinner = [player1.address, player2.address, player3.address].includes(winner);
+      expect(isValidWinner).to.be.true;
 
       // Check new round started
       const newRoundId = await raffle.s_currentRoundId();
@@ -230,10 +235,6 @@ describe("Raffle Contract Tests", function () {
     });
 
     it("should prevent double settlement", async function () {
-      if (!developmentChains.includes(network.name)) {
-        this.skip();
-      }
-
       await raffle.connect(player1).enterRaffle({ value: entranceFee });
       await network.provider.send("evm_increaseTime", [interval + 1]);
       await network.provider.send("evm_mine", []);
@@ -244,11 +245,13 @@ describe("Raffle Contract Tests", function () {
       const requestId = requestEvent.args.requestId;
 
       // First fulfillment
-      await vrfCoordinatorV2Mock.fulfillRandomWords(requestId, randomnessProvider.address);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await vrfCoordinatorMock.fulfillRandomWords(requestId, randomnessProvider.address);
 
-      // Try to fulfill again - should fail (but we can't easily test this without mocking)
-      // The state will be SETTLED, so it should revert
+      // Try to fulfill again - should fail because request is already fulfilled
+      await mustRevert(
+        vrfCoordinatorMock.fulfillRandomWords(requestId, randomnessProvider.address),
+        "Request already fulfilled"
+      );
     });
   });
 });

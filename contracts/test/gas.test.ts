@@ -26,7 +26,7 @@ describe("Gas measurements (local, txReceipt.gasUsed)", function () {
     [deployer, user1, user2] = await ethers.getSigners();
     await deployments.fixture();
 
-    vrf = await ethers.getContract("VRFCoordinatorV2Mock");
+    vrf = await ethers.getContract("VRFCoordinatorMock");
     provider = await ethers.getContract("RandomnessProvider");
     treasury = await ethers.getContract("Treasury");
     dice = await ethers.getContract("DiceGame");

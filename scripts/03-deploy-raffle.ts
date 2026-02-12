@@ -100,23 +100,18 @@ const deployRafflePlatform: DeployFunction = async function (hre: HardhatRuntime
 
     // Configure for local or testnet
     if (developmentChains.includes(network.name)) {
-        // Local network: use mocks
-        const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
+        // Local network: use VRF v2.5 mock
+        const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorMock");
         vrfCoordinatorV2Address = vrfCoordinatorV2Mock.address;
         
-        // Create subscription
-        const tx = await vrfCoordinatorV2Mock.createSubscription();
-        const txReceipt = await tx.wait(1);
-        subscriptionId = txReceipt.events[0].args.subId;
-        
-        // Fund subscription
-        await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, ethers.utils.parseEther("2"));
+        // VRF v2.5 mock doesn't need subscription creation, use fixed ID
+        subscriptionId = "1";
         
         // Use config values or defaults
         keyHash = networkConfig[chainId!]?.gasLane || "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c";
         callbackGasLimit = networkConfig[chainId!]?.callbackGasLimit || "500000";
         
-        log(`✅ Created subscription ID: ${subscriptionId}`);
+        log(`✅ Using VRF v2.5 Mock with subscription ID: ${subscriptionId}`);
     } else {
         // Testnet: use real Chainlink VRF
         if (!networkConfig[chainId!]) {
@@ -144,9 +139,8 @@ const deployRafflePlatform: DeployFunction = async function (hre: HardhatRuntime
 
     // Add consumer to subscription (local only)
     if (developmentChains.includes(network.name)) {
-        const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock");
-        await vrfCoordinatorV2Mock.addConsumer(subscriptionId, randomnessProvider.address);
-        log("✅ Added RandomnessProvider as consumer to VRF subscription");
+        // VRF v2.5 mock doesn't require manual consumer addition
+        log("✅ VRF v2.5 Mock ready (no consumer registration needed)");
     }
 
     // Verify on testnets

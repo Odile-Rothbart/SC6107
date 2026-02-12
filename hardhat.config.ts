@@ -67,7 +67,7 @@ const config: HardhatUserConfig = {
 
     // 【关键修改点】告诉 hardhat-deploy 去 scripts 文件夹找部署脚本
     paths: {
-        sources: "./contracts/src",
+        sources: "./contracts",  // 改为包含整个 contracts 目录（包括 src 和 test）
         tests: "./contracts/test",
         cache: "./cache",
         artifacts: "./artifacts",

@@ -202,6 +202,39 @@ export default function DiceGamePage() {
     }
   };
 
+  // Load all player bets when betIds change
+  useEffect(() => {
+    const loadPlayerBets = async () => {
+      if (!publicClient || !betIds || betIds.length === 0) {
+        setPlayerBets([]);
+        return;
+      }
+
+      try {
+        const betsPromises = betIds.map((betId: bigint) =>
+          publicClient.readContract({
+            address: DICEGAME_ADDRESS,
+            abi: DICEGAME_ABI,
+            functionName: "getBet",
+            args: [betId],
+          })
+        );
+
+        const bets = await Promise.all(betsPromises);
+        setPlayerBets(bets.reverse()); // Show newest first
+        
+        // Set latest bet
+        if (bets.length > 0) {
+          setLatestBet(bets[bets.length - 1]);
+        }
+      } catch (error) {
+        console.error("Error loading player bets:", error);
+      }
+    };
+
+    loadPlayerBets();
+  }, [betIds, publicClient]);
+
   // Note: Loading multiple bets in a loop is removed because useReadContract 
   // cannot be called inside loops or async functions (React Hooks rules).
   // Consider using the most recent bet from BetPlaced/BetSettled events instead.
@@ -364,7 +397,7 @@ export default function DiceGamePage() {
                     </div>
                     <div>
                       <div className="text-gray-400">Status</div>
-                      <div className="font-bold">{statusText[latestBet.status]}</div>
+                      <div className="font-bold">{statusText[latestBet.status as BetStatus]}</div>
                     </div>
                     <div>
                       <div className="text-gray-400">Your Choice</div>
@@ -460,7 +493,7 @@ export default function DiceGamePage() {
                             ? "bg-green-500/20 text-green-400"
                             : "bg-yellow-500/20 text-yellow-400"
                         }`}>
-                          {statusText[bet.status]}
+                          {statusText[bet.status as BetStatus]}
                         </span>
                       </td>
                       <td className="px-4 py-3">

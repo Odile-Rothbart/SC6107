@@ -1,23 +1,26 @@
 "use client";
 
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { hardhat, sepolia } from "wagmi/chains";
+import { sepolia } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
 
 const queryClient = new QueryClient();
 
-const hardhatRpc =
-  process.env.NEXT_PUBLIC_HARDHAT_RPC_URL ?? "http://127.0.0.1:8545";
+const sepoliaRpc = process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL;
 
-const sepoliaRpc = process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL; // optional
+if (!sepoliaRpc) {
+  throw new Error(
+    "Missing NEXT_PUBLIC_SEPOLIA_RPC_URL in .env.local (Sepolia chainId=11155111)."
+  );
+}
 
 const config = createConfig({
-  chains: [hardhat, sepolia],
+  chains: [sepolia],
   connectors: [injected()],
   transports: {
-    [hardhat.id]: http(hardhatRpc),
-    [sepolia.id]: sepoliaRpc ? http(sepoliaRpc) : http(),
+    [sepolia.id]: http(sepoliaRpc),
   },
   ssr: true,
 });

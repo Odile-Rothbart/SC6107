@@ -101,8 +101,6 @@ npm run dev
 
 ### Testnet Deployment (Sepolia)
 
-### Testnet Deployment (Sepolia)
-
 1. **Get Sepolia ETH**:
    - Alchemy: https://sepoliafaucet.com/
    - Chainlink: https://faucets.chain.link/sepolia
@@ -152,8 +150,6 @@ cd frontend
 npm install
 npm run dev
 ```
-
-## 👤 User Guide
 
 ## 👤 User Guide
 
@@ -245,8 +241,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Authors
 
-- **Student**: SC6107 Course Project
-- **Course**: Blockchain Technology and Applications
+- **Student**: Yu Yingzi, Zhang Muzi, Xu Wenjun, Long Cai
 - **Year**: 2026
 
 ## 🙏 Acknowledgments
